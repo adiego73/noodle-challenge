@@ -58,7 +58,15 @@ function __drawSegment(x, y, inRadius, outRadius, startAngle, endAngle, strokeCo
  * @param width
  */
 function createBowl(x, y, radius, width = 6) {
-    __drawSegment(x, y, radius, radius + width, 0, 2 * Math.PI, "black", Utils.randomColor());
+    let outerCircle = two.makeCircle(x, y, radius + width);
+    outerCircle.linewidth = 1;
+    outerCircle.stroke = "black";
+    outerCircle.fill = Utils.randomColor();
+
+    let innerCircle = two.makeCircle(x, y, radius);
+    innerCircle.linewidth = 1;
+    innerCircle.stroke = "black";
+    innerCircle.fill = "white";
 }
 
 /**
@@ -91,14 +99,12 @@ function createNoodle(Bowl, minLength, maxLength, minAngle, maxAngle, minBlendRa
 
     // I choose a random point inside the inner circle
     // (the circle in which the radius of the arc will be the minimum at the perimeter).
-    
     let rand = innerRadius * 2 * Math.PI;
     let x = (innerRadius * Math.sqrt(Math.random())) * Math.cos(rand) + Bowl.x;
     let y = (innerRadius * Math.sqrt(Math.random())) * Math.sin(rand) + Bowl.y;
 
     // draw the noodle.
-    // __drawSegment(x, y, arcRadius - lineWidth, arcRadius, startAngle, endAngle);
-    two.makeCurve(x, y, )
+    __drawSegment(x, y, arcRadius - lineWidth, arcRadius, startAngle, endAngle);
 }
 
 function main() {
@@ -111,12 +117,13 @@ function main() {
     // define the bowl's radius
     let radius = ((HEIGHT < WIDTH) ? HEIGHT : WIDTH) / 3;
 
+    // draw the bowl.
+    createBowl(x, y, radius, 8);
+
     // amount of noodles to create
     let qtyNoodles = Utils.map(LINE_WIDTH, 10, 1, 800, 3000);
 
-    for (let i = qtyNoodles; i > 0; i--) {
+    for (let i = qtyNoodles; i > 0; i--)
         createNoodle({x: x, y: y, radius: radius}, MIN_LENGTH, MAX_LENGTH, MIN_ANGLE, MAX_ANGLE, MIN_BLEND_RADIUS, LINE_WIDTH);
-    }
-    // draw the bowl.
-    createBowl(x, y, radius, 8);
+
 }
