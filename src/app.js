@@ -11,10 +11,8 @@ const HEIGHT = 600;
 // constants
 const LINE_WIDTH = 5; // line width goes from 1 to 10
 const MIN_BLEND_RADIUS = 10;
-const MIN_LENGTH = 100;
-const MAX_LENGTH = 300;
-const MIN_ANGLE = Utils.degToRad(20);
-const MAX_ANGLE = Utils.degToRad(180);
+const MIN_LENGTH = 5;
+const MAX_LENGTH = 100;
 
 /**
  * Bootstrap the application.
@@ -59,15 +57,19 @@ function __drawSegment(x, y, inRadius, outRadius, startAngle, endAngle, strokeCo
  * @param width
  */
 function createBowl(x, y, radius, width = 6) {
-    let outerCircle = two.makeCircle(x, y, radius + width);
-    outerCircle.linewidth = 1;
-    outerCircle.stroke = "black";
-    outerCircle.noFill();
-
-    let innerCircle = two.makeCircle(x, y, radius);
-    innerCircle.linewidth = 1;
-    innerCircle.stroke = "black";
-    innerCircle.noFill();
+    // let outerCircle = two.makeCircle(x, y, radius + width);
+    // outerCircle.linewidth = 1;
+    // outerCircle.stroke = "black";
+    // outerCircle.noFill();
+    //
+    // let innerCircle = two.makeCircle(x, y, radius);
+    // innerCircle.linewidth = 1;
+    // innerCircle.stroke = "black";
+    // innerCircle.noFill();
+    let bowl = two.makeArcSegment(x, y, radius, radius + width, 0, 2 * Math.PI);
+    bowl.fill = Utils.randomColor();
+    bowl.stroke = "black";
+    bowl.linewidth = 1;
 }
 
 /**
@@ -75,15 +77,13 @@ function createBowl(x, y, radius, width = 6) {
  * @param Bowl object with the bowl properties: {x, pos_x, y: pos_y, radius: radius }
  * @param minLength minimum arc's length
  * @param maxLength maximum arc's length
- * @param minAngle
- * @param maxAngle
  * @param minBlendRadius minimum blend radius
  * @param lineWidth noodle width
  */
-function createNoodle(Bowl, minLength, maxLength, minAngle, maxAngle, minBlendRadius, lineWidth) {
+function createNoodle(Bowl, minLength, maxLength, minBlendRadius, lineWidth) {
     // setup the arc length.
     let length = _.random(minLength, maxLength, true);
-    let radius = _.random(minBlendRadius, minBlendRadius * 4, true);
+    let radius = _.random(minBlendRadius, 2 * minBlendRadius, true);
 
     // amount of complete arcs
     let amountOfArcs = length / (radius * Utils.degToRad(180));
@@ -95,8 +95,7 @@ function createNoodle(Bowl, minLength, maxLength, minAngle, maxAngle, minBlendRa
         let arc_y = Bowl.y;
 
         let start = (i % 2 === 1) ? Utils.degToRad(180) : Utils.degToRad(-180);
-        let end = Utils.degToRad(0);
-        return new Two.ArcSegment(arc_x, arc_y, radius - lineWidth, radius, start, end);
+        return new Two.ArcSegment(arc_x, arc_y, radius - lineWidth, radius, start, Utils.degToRad(0));
     });
 
     if (length > 0) {
@@ -110,26 +109,23 @@ function createNoodle(Bowl, minLength, maxLength, minAngle, maxAngle, minBlendRa
         arcs.push(arc);
     }
 
-    let noodleRadius = _.reduce(arcs, (sum, e2) => {
-        return sum + e2.outerRadius;
+    let noodleRadius = _.reduce(arcs, (sum, e) => {
+         return sum + (e.innerRadius);
     }, 0);
 
-    let group = two.makeGroup(arcs);
+    let innerRadius = Bowl.radius - noodleRadius - lineWidth;
 
-    let innerRadius = Bowl.radius - noodleRadius;
     let rand = _.random(0, innerRadius, true) * 2 * Math.PI;
     let x = (innerRadius * Math.sqrt(_.random(0, 1, true))) * Math.cos(rand) + Bowl.x;
     let y = (innerRadius * Math.sqrt(_.random(0, 1, true))) * Math.sin(rand) + Bowl.y;
 
-    // console.log(x + "   " + y);
-
-    // two.makeCircle(Bowl.x, Bowl.y, innerRadius).noFill();
-    // two.makeCircle(x, y, 2).fill = "red";
-
+    let color = "white";
+    // color = Utils.randomColor();
+    let group = two.makeGroup(arcs);
     group.center();
     group.translation = new Two.Vector(x, y);
     group.rotation = _.random(0, 2 * Math.PI);
-    group.fill = "white"; // Utils.randomColor();
+    group.fill = color;
 }
 
 function main() {
@@ -150,7 +146,7 @@ function main() {
             x: x,
             y: y,
             radius: radius
-        }, MIN_LENGTH, MAX_LENGTH, MIN_ANGLE, MAX_ANGLE, MIN_BLEND_RADIUS, LINE_WIDTH);
+        }, MIN_LENGTH, MAX_LENGTH, MIN_BLEND_RADIUS, LINE_WIDTH);
 
     // draw the bowl.
     createBowl(x, y, radius, 8);
