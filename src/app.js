@@ -11,8 +11,8 @@ const HEIGHT = 600;
 // constants
 const LINE_WIDTH = 5; // line width goes from 1 to 10
 const MIN_BLEND_RADIUS = 10;
-const MIN_LENGTH = 10;
-const MAX_LENGTH = 500;
+const MIN_LENGTH = 100;
+const MAX_LENGTH = 300;
 const MIN_ANGLE = Utils.degToRad(20);
 const MAX_ANGLE = Utils.degToRad(180);
 
@@ -25,8 +25,9 @@ function bootstrap() {
     two = new Two({
         type: Two.Types.canvas,
         autostart: true,
-        width: WIDTH,
-        height: HEIGHT
+        fullscreen: true
+        // width: WIDTH,
+        // height: HEIGHT
     }).appendTo(canvas);
 
 }
@@ -61,12 +62,12 @@ function createBowl(x, y, radius, width = 6) {
     let outerCircle = two.makeCircle(x, y, radius + width);
     outerCircle.linewidth = 1;
     outerCircle.stroke = "black";
-    outerCircle.fill = Utils.randomColor();
+    outerCircle.noFill();
 
     let innerCircle = two.makeCircle(x, y, radius);
     innerCircle.linewidth = 1;
     innerCircle.stroke = "black";
-    innerCircle.fill = "white";
+    innerCircle.noFill();
 }
 
 /**
@@ -81,30 +82,54 @@ function createBowl(x, y, radius, width = 6) {
  */
 function createNoodle(Bowl, minLength, maxLength, minAngle, maxAngle, minBlendRadius, lineWidth) {
     // setup the arc length.
-    let length = Utils.randomBetween(minLength, maxLength);
+    let length = _.random(minLength, maxLength, true);
+    let radius = _.random(minBlendRadius, minBlendRadius * 4, true);
 
-    // define an angle using the min and max angles
-    let angle = Utils.randomBetween(minAngle, maxAngle);
-    // set a random starting point
-    let startAngle = Math.random() * Math.PI * 2;
-    // define the endAngle
-    let endAngle = angle + startAngle;
+    // amount of complete arcs
+    let amountOfArcs = length / (radius * Utils.degToRad(180));
+    let integerAmountOfArcs = Math.floor(amountOfArcs);
 
-    // calculate the radius of the arc as lenght / angle. But if the arc is less than minBlendRadius, set it up as minBlendRadius.
-    // Same if it is greater than the maximum inner circle radius (Bowl.radius - minBlendRadius)
-    let arcRadius = Utils.throttle((length / angle), minBlendRadius, Bowl.radius - minBlendRadius);
+    let arcs = _.map(_.range(integerAmountOfArcs), (i) => {
+        length -= length / integerAmountOfArcs;
+        let arc_x = Bowl.x + (2 * i * radius) - (i * lineWidth);
+        let arc_y = Bowl.y;
 
-    // calculate the maximum radius based on the arcRadius
-    let innerRadius = Bowl.radius - arcRadius;
+        let start = (i % 2 === 1) ? Utils.degToRad(180) : Utils.degToRad(-180);
+        let end = Utils.degToRad(0);
+        return new Two.ArcSegment(arc_x, arc_y, radius - lineWidth, radius, start, end);
+    });
 
-    // I choose a random point inside the inner circle
-    // (the circle in which the radius of the arc will be the minimum at the perimeter).
-    let rand = innerRadius * 2 * Math.PI;
-    let x = (innerRadius * Math.sqrt(Math.random())) * Math.cos(rand) + Bowl.x;
-    let y = (innerRadius * Math.sqrt(Math.random())) * Math.sin(rand) + Bowl.y;
+    if (length > 0) {
+        let arc_x = Bowl.x + (2 * integerAmountOfArcs * radius) - (integerAmountOfArcs * lineWidth);
+        let arc_y = Bowl.y;
 
-    // draw the noodle.
-    __drawSegment(x, y, arcRadius - lineWidth, arcRadius, startAngle, endAngle);
+        let angle = (length / radius) - Utils.degToRad(180);
+        let start = (integerAmountOfArcs % 2 === 1) ? Utils.degToRad(180) : Utils.degToRad(-180);
+        let end = angle * -1;
+        let arc = new Two.ArcSegment(arc_x, arc_y, radius - lineWidth, radius, start, end);
+        arcs.push(arc);
+    }
+
+    let noodleRadius = _.reduce(arcs, (sum, e2) => {
+        return sum + e2.outerRadius;
+    }, 0);
+
+    let group = two.makeGroup(arcs);
+
+    let innerRadius = Bowl.radius - noodleRadius;
+    let rand = _.random(0, innerRadius, true) * 2 * Math.PI;
+    let x = (innerRadius * Math.sqrt(_.random(0, 1, true))) * Math.cos(rand) + Bowl.x;
+    let y = (innerRadius * Math.sqrt(_.random(0, 1, true))) * Math.sin(rand) + Bowl.y;
+
+    // console.log(x + "   " + y);
+
+    // two.makeCircle(Bowl.x, Bowl.y, innerRadius).noFill();
+    // two.makeCircle(x, y, 2).fill = "red";
+
+    group.center();
+    group.translation = new Two.Vector(x, y);
+    group.rotation = _.random(0, 2 * Math.PI);
+    group.fill = "white"; // Utils.randomColor();
 }
 
 function main() {
@@ -117,13 +142,16 @@ function main() {
     // define the bowl's radius
     let radius = ((HEIGHT < WIDTH) ? HEIGHT : WIDTH) / 3;
 
-    // draw the bowl.
-    createBowl(x, y, radius, 8);
-
     // amount of noodles to create
-    let qtyNoodles = Utils.map(LINE_WIDTH, 10, 1, 800, 3000);
+    let qtyNoodles = Utils.map(LINE_WIDTH, 10, 1, 800, 5000);
 
     for (let i = qtyNoodles; i > 0; i--)
-        createNoodle({x: x, y: y, radius: radius}, MIN_LENGTH, MAX_LENGTH, MIN_ANGLE, MAX_ANGLE, MIN_BLEND_RADIUS, LINE_WIDTH);
+        createNoodle({
+            x: x,
+            y: y,
+            radius: radius
+        }, MIN_LENGTH, MAX_LENGTH, MIN_ANGLE, MAX_ANGLE, MIN_BLEND_RADIUS, LINE_WIDTH);
 
+    // draw the bowl.
+    createBowl(x, y, radius, 8);
 }

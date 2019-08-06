@@ -33,4 +33,8 @@ class Utils {
     static degToRad(deg){
         return (deg * Math.PI / 180);
     }
+
+    static radToDeg(rad){
+        return (rad / Math.PI * 180);
+    }
 }
