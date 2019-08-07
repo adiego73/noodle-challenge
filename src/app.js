@@ -9,7 +9,6 @@ const WIDTH = 800;
 const HEIGHT = 600;
 
 // constants
-const LINE_WIDTH = 5; // line width goes from 1 to 10
 const MIN_BLEND_RADIUS = 10;
 const MIN_LENGTH = 60;
 const MAX_LENGTH = 150;
@@ -47,17 +46,12 @@ function createBowl(x, y, radius, width = 6) {
 /**
  * Draws a noodle.
  * @param Bowl object with the bowl properties: {x, pos_x, y: pos_y, radius: radius }
- * @param minLength minimum arc's length
- * @param maxLength maximum arc's length
- * @param minBlendRadius minimum blend radius
+ * @param length arc's length
+ * @param radius 
  * @param lineWidth noodle width
  */
-function createNoodle(Bowl, minLength, maxLength, minBlendRadius, lineWidth) {
-    // setup the arc length.
-    let length = _.random(minLength, maxLength, true);
-    let radius = _.random(minBlendRadius, 4 * minBlendRadius, true);
-
-    // amount arcs based on the length (ex. 1.75)
+function createNoodle(Bowl, length, radius, lineWidth) {
+        // amount arcs based on the length (ex. 1.75)
     let amountOfArcs = (length / radius) / Utils.degToRad(180);
     // amount of half-circle arcs (ex. 1)
     let integerAmountOfArcs = Math.floor(amountOfArcs);
@@ -127,15 +121,17 @@ function main() {
     let radius = ((HEIGHT < WIDTH) ? HEIGHT : WIDTH) / 3;
 
     // amount of noodles to create
-    let qtyNoodles = Utils.map(LINE_WIDTH, 10, 1, 800, 3000);
+    let lineWidth = 5; // line width goes from 1 to 10
+    let qtyNoodles = Utils.map(lineWidth, 10, 1, 800, 3000);
 
     for (let i = qtyNoodles; i > 0; i--)
-        createNoodle({
-            x: x,
-            y: y,
-            radius: radius
-        }, MIN_LENGTH, MAX_LENGTH, MIN_BLEND_RADIUS, LINE_WIDTH);
+    {
+        // setup the arc length and radius
+        let length = _.random(MIN_LENGTH, MAX_LENGTH, true);
+        let arcRadius = _.random(MIN_BLEND_RADIUS, 4 * MIN_BLEND_RADIUS, true);
 
+        createNoodle({x: x, y: y, radius: radius}, length, arcRadius, lineWidth);
+    }
     // draw the bowl.
     createBowl(x, y, radius, 8);
 }
