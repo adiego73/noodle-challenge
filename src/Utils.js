@@ -1,40 +1,27 @@
+// constants
+const WIDTH = 800;
+const HEIGHT = 600;
+const MIN_BEND_RADIUS = 5;
+const MIN_LENGTH = 200;
+const MAX_LENGTH = 300;
+
+const PI = Math.PI;
+const TWO_PI = 2 * PI;
+
 class Utils {
-    static distance(x1, y1, x2, y2) {
-        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-    }
-
-    static randomBetween(min, max){
-        return (Math.random() * (max - min) ) + min;
-    }
-
+    /**
+     * returns a string representing a color
+     * @returns {string}
+     */
     static randomColor(){
-        return 'rgb('
-            + Math.floor(Math.random() * 255) + ','
-            + Math.floor(Math.random() * 255) + ','
-            + Math.floor(Math.random() * 255) + ')';
-    }
-
-    static throttle(value, min, max){
-        if(value < min)
-            return min;
-        else if(value > max)
-            return max;
-
-        return value;
+        return '#'
+            + Math.floor(Math.random() * 255).toString(16)
+            + Math.floor(Math.random() * 255).toString(16)
+            + Math.floor(Math.random() * 255).toString(16);
     }
 
     static map(value, in_min, in_max, out_min, out_max){
-
         // ((value−in_min) * (out_max−out_min) / (in_max−in_min))+out_min
-
         return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-    }
-
-    static degToRad(deg){
-        return (deg * Math.PI / 180);
-    }
-
-    static radToDeg(rad){
-        return (rad / Math.PI * 180);
     }
 }
