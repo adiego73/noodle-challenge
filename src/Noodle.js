@@ -11,7 +11,7 @@ class Noodle {
         this.length = length;
     }
 
-    createInside(context, Bowl) {
+    createInside(Bowl) {
         let i = 0,
             _radius = 0,
             radius = 0,
@@ -61,21 +61,42 @@ class Noodle {
             i++;
         }
 
-        // find the center of the figure
         this.translate = {
             x: this.x,
             y: this.y
         };
 
-        this.box = {
-            width: (this.arcs[this.arcs.length - 1].x - this.arcs[0].x),
-            height: (this.arcs[this.arcs.length - 1].y - this.arcs[0].y)
-        };
-
-        this.x = (this.arcs[0].x + this.arcs[this.arcs.length - 1].x) / 2;
-        this.y = (this.arcs[0].y + this.arcs[this.arcs.length - 1].y) / 2;
+        // find the center of the figure
+        this.box = this.getBoundingBox();
+        this.x = this.box.centroid.x;
+        this.y = this.box.centroid.y;
 
         this.moveTo(0, 0);
+    }
+
+    getBoundingBox(){
+        let left = Infinity, right = -Infinity,
+            top = -Infinity, bottom = Infinity;
+
+        this.arcs.forEach(a => {
+            top = Math.max(a.y + this.linewidth + a.radius, top);
+            left = Math.min(a.x - this.linewidth - a.radius, left);
+            right = Math.max(a.x + this.linewidth + a.radius, right);
+            bottom = Math.min(a.y - this.linewidth - a.radius, bottom);
+        });
+
+        return {
+            top: top,
+            bottom: bottom,
+            right: right,
+            left: left,
+            width: right - left,
+            height: top - bottom,
+            centroid: {
+                x: (right + left) / 2,
+                y: (top + bottom) / 2
+            }
+        }
     }
 
     moveTo(x, y) {

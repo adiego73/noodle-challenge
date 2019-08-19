@@ -7,7 +7,7 @@ const MAX_LENGTH = 300;
 
 const PI = Math.PI;
 const TWO_PI = 2 * PI;
-const HALF_PI = PI /2;
+const HALF_PI = 0.5 *  PI;
 
 class Utils {
     /**
@@ -35,12 +35,14 @@ class Utils {
      * @param color
      */
     static drawCircle(context, x, y, radius, width = 6, color = "white") {
-        context.beginPath();
-        context.arc(x, y, radius + (width/2), 0, TWO_PI);
-        context.lineWidth = width;
-        context.lineCap = "butt";
-        context.strokeStyle = color;
-        context.stroke();
+        if(color !== "transparent") {
+            context.beginPath();
+            context.arc(x, y, radius + (width / 2), 0, TWO_PI);
+            context.lineWidth = width;
+            context.lineCap = "butt";
+            context.strokeStyle = color;
+            context.stroke();
+        }
 
         context.beginPath();
         context.arc(x, y, radius + width, 0, TWO_PI);
@@ -75,5 +77,11 @@ class Utils {
 
     static radToDeg(rad) {
         return rad * 180 / PI;
+    }
+
+    static drawRec(context, x, y, width, height){
+        context.beginPath();
+        context.rect(x - width/2, y - height/2, width, height);
+        context.stroke();
     }
 }
