@@ -17,4 +17,11 @@ class Arc {
         this.sa += angle;
         this.ea += angle;
     }
+
+    length(){
+        if(this.ea > this.sa){
+            return this.radius * (this.ea - this.sa);
+        }
+        return this.radius * (this.sa - this.ea);
+    }
 }
