@@ -1,10 +1,11 @@
 class Arc {
-    constructor(x, y, radius, startAngle, endAngle){
+    constructor(x, y, radius, startAngle, endAngle, cw = false){
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.sa = startAngle;
         this.ea = endAngle;
+        this.cw = cw;
     }
 
     moveTo(x, y){

@@ -7,6 +7,7 @@ const MAX_LENGTH = 300;
 
 const PI = Math.PI;
 const TWO_PI = 2 * PI;
+const HALF_PI = PI /2;
 
 class Utils {
     /**
@@ -23,5 +24,56 @@ class Utils {
     static map(value, in_min, in_max, out_min, out_max){
         // ((value−in_min) * (out_max−out_min) / (in_max−in_min))+out_min
         return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+    }
+
+    /**
+     * Draw a circle.
+     * @param x coordinate of the bowl's center
+     * @param y coordinate of the bowl's center
+     * @param radius
+     * @param width
+     * @param color
+     */
+    static drawCircle(context, x, y, radius, width = 6, color = "white") {
+        context.beginPath();
+        context.arc(x, y, radius + (width/2), 0, TWO_PI);
+        context.lineWidth = width;
+        context.lineCap = "butt";
+        context.strokeStyle = color;
+        context.stroke();
+
+        context.beginPath();
+        context.arc(x, y, radius + width, 0, TWO_PI);
+        context.lineWidth = 1;
+        context.strokeStyle = "black";
+        context.stroke();
+
+        context.beginPath();
+        context.arc(x, y, radius, 0, TWO_PI);
+        context.lineWidth = 1;
+        context.strokeStyle = "black";
+        context.stroke();
+    }
+
+    static getRandomPosition(Bowl){
+        let bowlRadius = Bowl.radius - MIN_BEND_RADIUS;
+        let rand = _.random(0, bowlRadius, true) * TWO_PI;
+        let new_x, new_y;
+        // we need to cover all the bowl, so:
+        //  - get a random position inside a circumference
+        // - or get a random position over a circumference
+        // if(_.random(0, 10) % 2) {
+            new_x = (bowlRadius * Math.sqrt(_.random(0, 1, true))) * Math.cos(rand) + Bowl.x;
+            new_y = (bowlRadius * Math.sqrt(_.random(0, 1, true))) * Math.sin(rand) + Bowl.y;
+        // }else{
+        //     new_x = bowlRadius * Math.cos(rand) + Bowl.x;
+        //     new_y = bowlRadius * Math.sin(rand) + Bowl.y;
+        // }
+
+        return {x: new_x, y: new_y};
+    }
+
+    static radToDeg(rad) {
+        return rad * 180 / PI;
     }
 }
