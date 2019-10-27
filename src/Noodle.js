@@ -18,7 +18,7 @@ class Noodle {
 
         let points = [];
         // in the worst case I would need maxQtyPoints to build the noodle.
-        let maxQtyPoints = Math.ceil((length / minRadius) / PI);
+        let maxQtyPoints = Math.ceil((length / minRadius) / HALF_PI);
         // we define the points in the following way:
         // - first, an imaginary circle centered at (0;0) with random radius
         // - then, an imaginary circle centered in a point near the previous circle, with

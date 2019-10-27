@@ -27,7 +27,8 @@ function main() {
     let lineWidth = 5; // line width goes from 1 to 10
     let qtyNoodles = Utils.map(lineWidth, 10, 1, 800, 10000);
 
-    for (let i = qtyNoodles; i > 0; i--) {
+    for (let i = qtyNoodles; i > 0; i--)
+    {
         // setup the arc length and radius
         let length = _.random(MIN_LENGTH, MAX_LENGTH, true);
 
@@ -36,7 +37,7 @@ function main() {
         // the noodle should be inside a circumference defined as the bowl circumference minus the noodle radius.
         // since the noodle is centered on its centroid, there is no problem to be over the perimeter of the inner circle.
         let noodleRadius = Math.sqrt(Math.pow(noodle.box.width, 2) + Math.pow(noodle.box.height, 2)) / 2;
-        let innerRadius = radius - noodleRadius + 7;
+        let innerRadius = radius - noodleRadius + 3.2;
 
         // omit noodles with diagonal grater than the radius, which will be outside the bowl.
         if (innerRadius < 0) {
