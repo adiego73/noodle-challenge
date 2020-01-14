@@ -10,7 +10,6 @@ function bootstrap() {
     context = canvas.getContext("2d");
     context.canvas.width = window.innerWidth;
     context.canvas.height = window.innerHeight;
-
 }
 
 function main() {
@@ -18,33 +17,32 @@ function main() {
     bootstrap();
 
     // center the bowl at the middle of the canvas
-    let x = WIDTH / 2;
-    let y = HEIGHT / 2;
+    const x = WIDTH / 2;
+    const y = HEIGHT / 2;
     // define the bowl's radius
-    let radius = ((HEIGHT < WIDTH) ? HEIGHT : WIDTH) / 3;
+    const radius = ((HEIGHT < WIDTH) ? HEIGHT : WIDTH) / 3;
 
     // amount of noodles to create
-    let lineWidth = 5; // line width goes from 1 to 10
-    let qtyNoodles = Utils.map(lineWidth, 10, 1, 800, 10000);
+    const lineWidth = 5; // line width goes from 1 to 10
+    const qtyNoodles = Utils.map(lineWidth, 10, 1, 800, 10000);
 
-    for (let i = qtyNoodles; i > 0; i--)
-    {
+    for (let i = qtyNoodles; i > 0; i--) {
         // setup the arc length and radius
-        let length = _.random(MIN_LENGTH, MAX_LENGTH, true);
+        const length = _.random(MIN_LENGTH, MAX_LENGTH, true);
 
-        let noodle = new Noodle(x, y, length, MIN_BEND_RADIUS, lineWidth, "white");
+        const noodle = new Noodle(x, y, length, MIN_BEND_RADIUS, lineWidth, "white");
 
         // the noodle should be inside a circumference defined as the bowl circumference minus the noodle radius.
         // since the noodle is centered on its centroid, there is no problem to be over the perimeter of the inner circle.
-        let noodleRadius = Math.sqrt(Math.pow(noodle.box.width, 2) + Math.pow(noodle.box.height, 2)) / 2;
-        let innerRadius = radius - noodleRadius + 3.2;
+        const noodleRadius = Math.sqrt(Math.pow(noodle.box.width, 2) + Math.pow(noodle.box.height, 2)) / 2;
+        const innerRadius = radius - noodleRadius + 3.2;
 
         // omit noodles with diagonal grater than the radius, which will be outside the bowl.
         if (innerRadius < 0) {
             continue;
         }
 
-        let randAngle = _.random(0, innerRadius, true) * TWO_PI;
+        const randAngle = _.random(0, innerRadius, true) * TWO_PI;
         let new_x, new_y;
         // we need to cover all the bowl, so:
         //  - get a random position inside a circumference

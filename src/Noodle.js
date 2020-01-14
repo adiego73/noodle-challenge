@@ -7,18 +7,18 @@ class Noodle {
         this.color = color;
         this.arcs = [];
 
+        const maxRadius = 4 * minRadius;
         let i = 0,
             _radius = 0,
             radius = 0,
             pos = {x: 0, y: 0},
-            maxRadius = 4 * minRadius,
             angle,
             start,
             end;
 
-        let points = [];
+        const points = [];
         // in the worst case I would need maxQtyPoints to build the noodle.
-        let maxQtyPoints = Math.ceil((length / minRadius) / HALF_PI);
+        const maxQtyPoints = Math.ceil((length / minRadius) / HALF_PI);
         // we define the points in the following way:
         // - first, an imaginary circle centered at (0;0) with random radius
         // - then, an imaginary circle centered in a point near the previous circle, with
@@ -55,7 +55,7 @@ class Noodle {
         // we build the noodle based on the defined points and the length.
         let remainingLength = length;
         while (remainingLength > 0) {
-            let point = points[i];
+            const point = points[i];
             radius = point.radius;
 
             // if the point is the first one, it should start at 0 deg;
@@ -124,8 +124,8 @@ class Noodle {
     }
 
     moveTo(x, y) {
-        let x_diff = x - this.x;
-        let y_diff = y - this.y;
+        const x_diff = x - this.x;
+        const y_diff = y - this.y;
 
         this.arcs.forEach(a => {
             let x_ = a.x + x_diff;
